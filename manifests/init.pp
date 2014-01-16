@@ -15,15 +15,22 @@
 # Name of the network.
 #
 #Limitations - only one or two extra auth parameters - cant do array iteration and index storing
-class nis::client ( $network, $extraauth="nis", $extraauth2="none" ) {
-        $this_profile = "$module_name"
+class nis::client ( 
+   $nis_domain = $nis::params::nis_domain, 
+   $extraauth = $nis::params::extraauth, 
+   $extraauth2 = $nis::params::extraauth2,
+   $servers  = $nis::params::servers,
+   ) inherits nis::params {
+
+
         $pname = $operatingsystem ? {
                      /(Red Hat|CentOS|Fedora|Scientific)/ => "ypbind",
                     Debian => "nis",} 
 
         package {"nis": 
                   name => "$pname",
-                  ensure => installed }
+                  ensure => installed 
+	}
         service {"nis":
                 name => $pname,
                 ensure => running,
@@ -33,13 +40,13 @@ class nis::client ( $network, $extraauth="nis", $extraauth2="none" ) {
         }
 
         file { "/etc/yp.conf":
-                content => template("${this_profile}/etc/yp.conf"),
+                content => template("${module_name}/etc/yp.conf"),
                 require => Package["nis"],
                 notify => Service["nis"]
-        }
+       }
 
         file { "/etc/defaultdomain":
-                content => "$network",
+                content => "$nis_domain",
                 require => Package["nis"],
                 notify => Service["nis"]
         }
