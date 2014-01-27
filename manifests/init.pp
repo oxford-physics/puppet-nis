@@ -50,7 +50,11 @@ class nis::client (
                 require => Package["nis"],
                 notify => Service["nis"]
         }
-
+        file { "/etc/sysconfig/ypbind":
+               content => 'OTHER_YPBIND_OPTS="-p 883"',
+                require => Package["nis"],
+               notify => Service["nis"],
+        }
   $extraauthint = "nis"
        if $extraauth2 == "none"  {
            $changeset=[
@@ -78,14 +82,13 @@ class nis::client (
 
          }
          
-      
-            augeas{"nis":
+    augeas{"nis":
 
        context   => '/files/etc/nsswitch.conf/',
-      #This part changes options on an already existing line
-      #This only works if the nsswitch.conf has passwd, group and shadow entries.  So you wont get the file created.
-      changes   => $changeset,
-#       notify    => Service['nis']
+       #This part changes options on an already existing line
+       #This only works if the nsswitch.conf has passwd, group and shadow entries.  So you wont get the file created.
+       changes   => $changeset,
+       notify    => Service['nis']
      }
 
    #TODO - copy in nsswitch if it doesnt exist
