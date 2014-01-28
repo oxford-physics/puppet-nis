@@ -20,6 +20,7 @@ class nis::client (
    $extraauth = $nis::params::extraauth, 
    $extraauth2 = $nis::params::extraauth2,
    $servers  = $nis::params::servers,
+   $ypbindport = $nis::params::ypbindport,
    ) inherits nis::params {
 
 
@@ -51,7 +52,7 @@ class nis::client (
                 notify => Service["nis"]
         }
         file { "/etc/sysconfig/ypbind":
-               content => 'OTHER_YPBIND_OPTS="-p 883"',
+               content => 'OTHER_YPBIND_OPTS="-p $ypbindport"',
                 require => Package["nis"],
                notify => Service["nis"],
         }
