@@ -7,6 +7,6 @@ class nis::params (
           $extraauth2 = hiera("nis::params::extraauth2",  "none" ),
           $servers = hiera_array("nis::params::servers", ['ppypman'] ),
           #ypbind listens on a specific port.  We want to use iptables,
-          $ypbindport = hieray("nis::params::ypbindport", 883 ),
+          $ypbindport = hiera("nis::params::ypbindport", 883 ),
 )
 {}
