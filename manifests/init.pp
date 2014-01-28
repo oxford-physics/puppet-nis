@@ -52,7 +52,7 @@ class nis::client (
                 notify => Service["nis"]
         }
         file { "/etc/sysconfig/ypbind":
-               content => 'OTHER_YPBIND_OPTS="-p $ypbindport"',
+               content => "OTHER_YPBIND_OPTS=\"-p $ypbindport\"",
                 require => Package["nis"],
                notify => Service["nis"],
         }
