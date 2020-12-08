@@ -19,27 +19,31 @@ class nis::client (
    $nis_domain = $nis::params::nis_domain, 
    $servers  = $nis::params::servers,
    $ypbindport = $nis::params::ypbindport,
+   $ypbindensure = $nis::params::ypbindensure,
+   $ypbindenable = $nis::params::ypbindenable,
+ 
    ) inherits nis::params {
 
 
         $pname = $operatingsystem ? {
-                     /(Red Hat|CentOS|Fedora|Scientific)/ => "ypbind",
-                    Debian => "nis",} 
+                     /(RedHat|CentOS|Fedora|Scientific)/ => "ypbind",
+                     /Debian/ => "nis"
+        } 
 
         package {"nis": 
                   name => "$pname",
                   ensure => installed 
-	}
+        }
         service {"nis":
                 name => $pname,
-                ensure => running,
-                enable => true,
+                ensure => $ypbindensure,
+                enable => $ypbindenable,
                 require => Package["nis"],
                 status => "test -f /var/run/ypbind.pid"
         }
 
         file { "/etc/yp.conf":
-                content => template("${module_name}/etc/yp.conf"),
+                content => template("nis/etc/yp.conf"),
                 require => Package["nis"],
                 notify => Service["nis"]
        }
@@ -51,10 +55,7 @@ class nis::client (
         }
         file { "/etc/sysconfig/ypbind":
                content => "OTHER_YPBIND_OPTS=\"-p $ypbindport\"",
-                require => Package["nis"],
+               require => Package["nis"],
                notify => Service["nis"],
         }
-
-   #TODO - copy in nsswitch if it doesnt exist
-   notify {"Warning: Nis client module does not manage rpcbind":}
 }
